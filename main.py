@@ -1,28 +1,54 @@
-from collections import Counter
-def count_unique_chars(text):
-    text=[i for i in text.lower() if i.isalnum()]
-    c = Counter(text)
-    return c
-    
-def count_words(text):
-    count = 0
-    for i in text.split():
-        count +=1
-    return count
-def book_report(count,words_d):
-    print("---book report for frankenstein---\n")
-    print(f"Number of words {count} \n")
-    for i in words_d:
-        print(f"The count of letter {i} is {words_d[i]}\n")
-    print("---End Report--")
-
-    
 def main():
-    with open("book/frankenstein.txt", 'r') as f:
-        file_text=f.read()
-        word_count=count_words(file_text)
-        word_count_dict=count_unique_chars(file_text)
-        book_report(word_count,word_count_dict)
+    book_path = "books/frankenstein.txt"
+    text = get_book_text(book_path)
+    num_words = get_num_words(text)
+    chars_dict = get_chars_dict(text)
+    chars_sorted_list = chars_dict_to_sorted_list(chars_dict)
 
-if __name__ == "__main__":
-    main()
+    print(f"--- Begin report of {book_path} ---")
+    print(f"{num_words} words found in the document")
+    print()
+
+    for item in chars_sorted_list:
+        if not item["char"].isalpha():
+            continue
+        print(f"The '{item['char']}' character was found {item['num']} times")
+
+    print("--- End report ---")
+
+
+def get_num_words(text):
+    words = text.split()
+    return len(words)
+
+
+def sort_on(d):
+    return d["num"]
+
+
+def chars_dict_to_sorted_list(num_chars_dict):
+    sorted_list = []
+    for ch in num_chars_dict:
+        sorted_list.append({"char": ch, "num": num_chars_dict[ch]})
+    sorted_list.sort(reverse=True, key=sort_on)
+    return sorted_list
+
+
+def get_chars_dict(text):
+    chars = {}
+    for c in text:
+        lowered = c.lower()
+        if lowered in chars:
+            chars[lowered] += 1
+        else:
+            chars[lowered] = 1
+    return chars
+
+
+
+def get_book_text(path):
+    with open(path) as f:
+        return f.read()
+
+
+main()
